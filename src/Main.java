@@ -15,7 +15,12 @@ class Usuario{
 }
 
 class Impressora{
+    int tipo;
+    String modelo;
+    String conexao;
+    int parametro;
 
+    boolean conexaoAberta = false;
 }
 
 public class Main {
