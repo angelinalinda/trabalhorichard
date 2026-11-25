@@ -159,3 +159,129 @@ public class Main {
         }
         return false;
     }
+    
+ private static void menu(Scanner entrada, Impressora impressora) {
+        int opcao = 0;
+
+        while (opcao != 11) {
+            System.out.println("\n===== IMPRESSORA ELGIN =====");
+            System.out.println("1 - Configurar conexao");
+            System.out.println("2 - Abrir conexao");
+            System.out.println("3 - Fechar conexao");
+            System.out.println("4 - Imprimir texto");
+            System.out.println("5 - Imprimir QR Code");
+            System.out.println("6 - Imprimir codigo de barras");
+            System.out.println("7 - Imprimir XML SAT");
+            System.out.println("8 - Imprimir XML de cancelamento");
+            System.out.println("9 - Abrir gaveta");
+            System.out.println("10 - Emitir sinal sonoro");
+            System.out.println("11 - Sair");
+
+            opcao = lerInteiro(entrada, "Escolha uma opcao: ");
+
+            if (opcao >= 4 && opcao <= 10 && !impressora.conexaoAberta) {
+                System.out.println("Conexao fechada. Abra a conexao antes.");
+                continue;
+            }
+
+            try {
+                switch (opcao) {
+                    case 1:
+                        if (impressora.conexaoAberta) {
+                            System.out.println("Feche a conexao antes de reconfigurar.");
+                        } else {
+                            configurarConexao(entrada, impressora);
+                        }
+                        break;
+
+
+                    case 2:
+                        if (!impressora.configurada) {
+                            System.out.println("Configure a conexao primeiro!");
+                        } else if (impressora.conexaoAberta) {
+                            System.out.println("A conexao ja esta aberta.");
+                        } else {
+                            impressora.abrirConexao();
+                        }
+                        break;
+
+                    case 3:
+                        if (!impressora.conexaoAberta) {
+                            System.out.println("A conexao ja esta fechada.");
+                        } else {
+                            impressora.fecharConexao();
+                        }
+                        break;
+
+                    case 4:
+                        System.out.print("Digite o texto que deseja imprimir: ");
+                        String texto = entrada.nextLine();
+                        impressora.imprimirTexto(texto);
+                        break;
+
+                    case 5:
+                        System.out.print("Digite os dados do QR Code: ");
+                        String qr = entrada.nextLine();
+                        int tamanhoQR = lerInteiroNoIntervalo(entrada, "Tamanho (1 a 6): ", 1, 6);
+                        int nivel = lerInteiroNoIntervalo(entrada, "Nivel de correcao (1 a 4): ", 1, 4);
+                        impressora.imprimirQRCode(qr, tamanhoQR, nivel);
+                        break;
+
+                    case 6:
+                        int tipoCodigo = lerTipoCodigoBarras(entrada);
+                        System.out.print("Digite os dados do codigo: ");
+                        String codigo = entrada.nextLine();
+                        int altura = lerInteiroNoIntervalo(entrada, "Altura (1 a 255): ", 1, 255);
+                        int largura = lerInteiroNoIntervalo(entrada, "Largura (1 a 6): ", 1, 6);
+                        int hri = lerInteiroNoIntervalo(entrada, "HRI (1 a 4): ", 1, 4);
+                        impressora.imprimirCodigoBarras(tipoCodigo, codigo, altura, largura, hri);
+                        break;
+
+                    case 7:
+                        String xmlSAT = lerArquivoXML("XMLSAT.xml");
+                        if (xmlSAT != null) {
+                            impressora.imprimirXMLSAT(xmlSAT);
+                        }
+                        break;
+
+                    case 8:
+                        String xmlCancelamento = lerArquivoXML("CANC_SAT.xml");
+                        if (xmlCancelamento != null) {
+                            impressora.imprimirXMLCancelamentoSAT(
+                                    xmlCancelamento, ASSINATURA_QR_CANCELAMENTO
+                            );
+                        }
+                        break;
+
+                    case 9:
+                        int pino = lerInteiroNoIntervalo(entrada, "Pino (0 ou 1): ", 0, 1);
+                        int ti = lerInteiroNoIntervalo(entrada, "Tempo inicial (1 a 255): ", 1, 255);
+                        int tf = lerInteiroNoIntervalo(entrada, "Tempo final (1 a 255): ", 1, 255);
+                        impressora.abrirGaveta(pino, ti, tf);
+                        break;
+
+                    case 10:
+                        int quantidade = lerInteiroNoIntervalo(entrada, "Quantidade de bips (1 a 63): ", 1, 63);
+                        int tempoInicio = lerInteiro(entrada, "Duracao do bip (ex.: 50): ");
+                        int tempoFim = lerInteiroNoIntervalo(entrada, "Pausa entre bips (1 a 25): ", 1, 25);
+                        impressora.sinalSonoro(quantidade, tempoInicio, tempoFim);
+                        break;
+
+                    case 11:
+                        if (impressora.conexaoAberta) {
+                            impressora.fecharConexao();
+                        }
+                        System.out.println("Programa encerrado!");
+                        break;
+
+                    default:
+                        System.out.println("Opcao invalida!");
+                        break;
+                }
+            } catch (LinkageError e) {
+                System.out.println("Nao foi possivel carregar ou executar a DLL: " + e.getMessage());
+            } catch (Exception e) {
+                System.out.println("Erro ao executar a operacao: " + e.getMessage());
+            }
+        }
+    }
