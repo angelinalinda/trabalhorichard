@@ -285,3 +285,74 @@ public class Main {
             }
         }
     }
+
+    private static void configurarConexao(Scanner entrada, Impressora impressora) {
+        System.out.println("Tipos: 1 = USB, 2 = Serial, 3 = Rede, 4 = Bluetooth");
+        int tipo = lerInteiroNoIntervalo(entrada, "Tipo de conexao: ", 1, 4);
+
+        System.out.print("Modelo da impressora (i8 ou i9): ");
+        String modelo = entrada.nextLine();
+
+        System.out.print("Conexao (USB, COM2 ou IP): ");
+        String conexao = entrada.nextLine();
+
+        int parametro;
+        if (tipo == 1) {
+            parametro = 0;
+            System.out.println("Parametro USB definido como 0.");
+        } else if (tipo == 2) {
+            parametro = lerInteiro(entrada, "Velocidade da conexao serial: ");
+        } else if (tipo == 3) {
+            parametro = lerInteiro(entrada, "Porta da conexao de rede: ");
+        } else {
+            parametro = lerInteiro(entrada, "Parametro da conexao Bluetooth: ");
+        }
+
+        impressora.configurar(tipo, modelo, conexao, parametro);
+    }
+
+    private static int lerTipoCodigoBarras(Scanner entrada) {
+        while (true) {
+            int tipo = lerInteiro(entrada, "Tipo do codigo de barras (0, 2, 3, 4 ou 8): ");
+            if (tipo == 0 || tipo == 2 || tipo == 3 || tipo == 4 || tipo == 8) {
+                return tipo;
+            }
+            System.out.println("Tipo nao listado. Use 0, 2, 3, 4 ou 8.");
+        }
+    }
+
+    private static int lerInteiro(Scanner entrada, String mensagem) {
+        while (true) {
+            System.out.print(mensagem);
+            try {
+                return Integer.parseInt(entrada.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.println("Digite um numero inteiro valido!");
+            }
+        }
+    }
+
+    private static int lerInteiroNoIntervalo(Scanner entrada, String mensagem, int minimo, int maximo) {
+        while (true) {
+            int valor = lerInteiro(entrada, mensagem);
+            if (valor >= minimo && valor <= maximo) {
+                return valor;
+            }
+            System.out.println("Digite um valor entre " + minimo + " e " + maximo + ".");
+        }
+    }
+
+    private static String lerArquivoXML(String nomeArquivo) {
+        try {
+            return new String(
+                    Files.readAllBytes(Paths.get(nomeArquivo)),
+                    StandardCharsets.UTF_8
+            );
+        } catch (IOException e) {
+            System.out.println("Nao foi possivel encontrar ou ler o arquivo " + nomeArquivo + ".");
+            System.out.println(e.getMessage());
+            return null;
+        }
+    }
+}
+
