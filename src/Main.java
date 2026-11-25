@@ -112,3 +112,50 @@ public void abrirConexao() {
         }
     }
 }
+
+public class Main {
+
+    private static final String ASSINATURA_QR_CANCELAMENTO =
+            "Q5DLkpdRijIRGY6YSSNsTWK1TztHL1vD0V1Jc4spo/CEUqICEb9SFy82ym8EhBRZjbh3btsZhF+sjHqEMR159i4agru9x6KsepK/q0" +
+            "E2e5xlU5cv3m1woYfgHyOkWDNcSdMsS6bBh2Bpq6s89yJ9Q6qh/J8YHi306ce9Tqb/drKvN2XdE5noRSS32TAWuaQEVd7u+TrvXlOQ" +
+            "sE3fHR1D5f1saUwQLPSdIv01NF6Ny7jZwjCwv1uNDgGZONJdlTJ6p0ccqnZvuE70aHOI09elpjEO6Cd+orI7XHHrFCwhFhAcbalc+Z" +
+            "fO5b/+vkyAHS6CYVFCDtYR9Hi5qgdk31v23w==";
+
+    public static void main(String[] args) {
+        Scanner entrada = new Scanner(System.in);
+        Usuario usuario = new Usuario();
+        Impressora impressora = new Impressora();
+
+        boolean entrou = realizarLogin(entrada, usuario);
+
+        if (entrou) {
+            menu(entrada, impressora);
+        } else {
+            System.out.println("Acesso bloqueado!");
+        }
+
+        entrada.close();
+    }
+
+    private static boolean realizarLogin(Scanner entrada, Usuario usuario) {
+        for (int i = 1; i <= 3; i++) {
+            System.out.print("Digite o usuario: ");
+            String nome = entrada.nextLine();
+
+            System.out.print("Digite a senha: ");
+            String senha = entrada.nextLine();
+
+            if (usuario.verificarLogin(nome, senha)) {
+                System.out.println("Login realizado com sucesso!");
+                return true;
+            }
+
+            System.out.println("Usuario ou senha incorretos!");
+            if (i < 3) {
+                System.out.println("Tentativas restantes: " + (3 - i));
+            } else {
+                System.out.println("Numero maximo de tentativas atingido!");
+            }
+        }
+        return false;
+    }
